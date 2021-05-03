@@ -63,4 +63,15 @@ if [[ "${DRY_RUN}" == "0" ]]; then
     ${RUN_DIR}/kubedb/setup.sh
 fi
 
+# Setup longhorn
+mkdir "${RUN_DIR}/longhorn"
+for f in $(ls -d ${root_dir}/kube/longhorn/*); do
+    gomplate -d config="${root_dir}/kube-variables.yaml" --file "${f}" --out "${RUN_DIR}/longhorn/$(basename ${f})" &>/dev/null
+done
+chmod +x ${RUN_DIR}/longhorn/setup.sh
+
+if [[ "${DRY_RUN}" == "0" ]]; then
+    ${RUN_DIR}/longhorn/setup.sh
+fi
+
 echo "Done."
