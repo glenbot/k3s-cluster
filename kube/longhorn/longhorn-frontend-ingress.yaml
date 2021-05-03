@@ -1,0 +1,19 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: longhorn-frontend-external
+  namespace: {{ (datasource "config").longhorn.namespace }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ (datasource "config").longhorn.frontend_subdomain }}.{{ (datasource "config").longhorn.domain }}`)
+      kind: Rule
+      services:
+        - name: longhorn-frontend
+          kind: Service
+  tls:
+    certResolver: letsencrypt
+    domains:
+      - main: {{ (datasource "config").longhorn.domain }}
+        sans: [ "*.{{ (datasource "config").longhorn.domain }}"]
