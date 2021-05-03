@@ -1,0 +1,97 @@
+---
+
+# https://computingforgeeks.com/install-kubernetes-on-ubuntu-using-k3s/
+- hosts: all
+  gather_facts: true
+  tags: nodes
+  tasks:
+  - name: Update and upgrade apt packages
+    become: true
+    apt:
+      upgrade: yes
+      update_cache: yes
+      cache_valid_time: 86400 # One day
+  - name: Install packages for k3s
+    become: true
+    apt:
+      pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - vim
+      - software-properties-common
+  - name: Set IP forward
+    become: true
+    ansible.posix.sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: yes
+      state: present
+      reload: yes
+  - name: Update Hosts File
+    become: true
+    template: src=files/hosts.j2 dest=/etc/hosts owner=root group=root
+  - name: "Check if Docker APT repo exists"
+    become: yes
+    lineinfile:
+      path: /etc/apt/sources.list
+      line: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+      state: present
+    check_mode: yes
+    register: docker_repo
+  - name: Add Docker repository
+    become: true
+    register: result
+    shell: |
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    when: docker_repo is changed
+  - name: Install Docker Community Edition
+    become: true  
+    apt:
+      name: docker-ce
+      update_cache: yes
+  - name: Adding user {{ user }} to docker group
+    become: true
+    user:
+      name: '{{ user }}'
+      groups: docker
+      append: yes
+  - name: Check if K3S is installed
+    stat:
+      path: /usr/local/bin/k3s
+    register: k3s_binary
+  - name: Install k3s master
+    become: true
+    register: result
+    shell: |
+      curl -sfL https://get.k3s.io | sh -s - --docker --disable traefik --disable servicelb
+      systemctl status k3s
+    when: k3s_binary.stat.exists == False and inventory_hostname in groups['k3s-master']
+  - name: Extract k3s token from master node
+    become: true
+    slurp:
+      src: /var/lib/rancher/k3s/server/node-token
+    register: master_token
+    when: inventory_hostname in groups['k3s-master']
+  - name: Download admin kube config (/etc/rancher/k3s/k3s.yaml) to {{ downloads }} 
+    become: true
+    ansible.builtin.fetch:
+      src: /etc/rancher/k3s/k3s.yaml
+      dest: "{{ downloads }}"
+    when: inventory_hostname in groups['k3s-master']
+  - name: Install k3s worker
+    become: true
+    register: result
+    shell: |
+      curl -sfL http://get.k3s.io | K3S_URL=https://{{ hostvars['gb-master-0']['ansible_default_ipv4']['address'] }}:6443 K3S_TOKEN="{{ hostvars[groups['k3s-master'][0]]['master_token']['content'] | b64decode | trim }}" sh -s - --docker
+      systemctl status k3s-agent
+    when: k3s_binary.stat.exists == False and inventory_hostname in groups['k3s-worker']
+  - name: Check k3s nodes
+    become: true
+    register: result
+    shell: |
+      kubectl get nodes -o wide
+    when: inventory_hostname in groups['k3s-master']
+  - debug:
+      var: result.stdout_lines

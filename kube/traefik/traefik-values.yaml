@@ -1,0 +1,46 @@
+# https://traefik.io/blog/install-and-configure-traefik-with-helm/
+additionalArguments:
+  {{- if (datasource "config").traefik.staging_cert }}
+  - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+  {{- end }}
+  {{- if eq (datasource "config").traefik.dns_challenge_type "godaddy" }}
+  - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=godaddy"
+  - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.delayBeforeCheck=10"
+  - "--certificatesresolvers.letsencrypt.acme.email=glen@glenbot.com"
+  - "--certificatesresolvers.letsencrypt.acme.storage=/certs/acme.json"
+  {{- end }}
+{{- if eq (datasource "config").traefik.dns_challenge_type "godaddy" }}
+env:
+  - name: GODADDY_API_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: godaddy-dns
+        key: secret
+  - name: GODADDY_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: godaddy-dns
+        key: key
+{{- end }}
+ingressRoute:
+  dashboard:
+    enabled: false
+persistence:
+  enabled: true
+  path: /certs
+  size: 128Mi
+ports.websecure.tls:
+  enabled: true
+  certResolver: "letsencrypt"
+  domains:
+    - main: {{ (datasource "config").traefik.domain }}
+      sans: 
+        - "*.{{ (datasource "config").traefik.domain }}"
+
+spec:
+  # Request this permanent IP address for traefik with MetalLB.
+  # Kubernetes Master Node has this ip address mapped in /etc/avahi/hosts
+  loadBalancerIP: {{ (datasource "config").traefik.load_balancer_ip }}
+
+podSecurityContext:
+  fsGroup: null # Temporary workaround for certificate file permissions

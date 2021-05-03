@@ -1,0 +1,19 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard-external
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ (datasource "config").traefik.dashboard_subdomain }}.{{ (datasource "config").traefik.domain }}`)
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+  tls:
+    certResolver: letsencrypt
+    domains:
+      - main: {{ (datasource "config").traefik.domain }}
+        sans: [ "*.{{ (datasource "config").traefik.domain }}"]

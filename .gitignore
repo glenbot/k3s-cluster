@@ -1,0 +1,6 @@
+downloads
+hosts
+.run
+ansible-variables.yaml
+kube-variables.yaml
+.vscode
