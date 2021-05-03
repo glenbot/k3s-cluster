@@ -27,7 +27,7 @@ Checking helm version --> ✔
 Checking kubectl version --> ✔
 ```
 
-* Pre-Install Ubuntu 20.04 LTS on all nodes *
+**Pre-Install Ubuntu 20.04 LTS on all nodes**
 
 OS can probably be any debian release. Must have `apt` package manager as scripts currently require it.
 
