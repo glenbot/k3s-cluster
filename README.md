@@ -99,5 +99,5 @@ kubedb:
 
 After running all steps above, next steps are:
 
-Step 1. `./setup-cluster.sh`
-Step 2. `./setup-kube-packages.sh`
+* Step 1. `./setup-cluster.sh`
+* Step 2. `./setup-kube-packages.sh`
