@@ -100,7 +100,7 @@ kubedb:
 After running all steps above, next steps are:
 
 * Step 1. `./setup-cluster.sh`
-* Step 2. `./setup-kube-packages.sh`
+* Step 2. `./setup-kube-packages.sh service1 service`
 # License MIT
 
 This software is open source. Please use at your own risk.
