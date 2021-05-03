@@ -13,7 +13,7 @@ fi
 {{ end }}
 
 # Install the helm chart
-helm upgrade -i traefik traefik/traefik -n "{{ (datasource "config").traefik.namespace }}" -f "${root_dir}/traefik-values.yaml"
+helm upgrade -i traefik traefik/traefik --version "{{ (datasource "config").traefik.chart_version }}" -n "{{ (datasource "config").traefik.namespace }}" -f "${root_dir}/traefik-values.yaml"
 
 if ! kubectl get ingressroute -n "{{ (datasource "config").traefik.namespace }}" traefik-dashboard-external &> /dev/null; then
   kubectl apply -f -n "{{ (datasource "config").traefik.namespace }}" "${root_dir}/traefik-dashboard-ingress.yaml"
