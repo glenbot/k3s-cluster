@@ -93,6 +93,16 @@ kubedb:
     cluster_name: myclustername
     email: myemail
     token: mytoken # generated from contents above
+longhorn:
+  namespace: longhorn
+  chart_version: 1.1.1
+  frontend_subdomain: longhorn
+  domain: my.domain.com
+argocd:
+  namespace: argocd
+  version: stable
+  frontend_subdomain: argocd
+  domain: my.domain.com
 ```
 
 # Provisioning

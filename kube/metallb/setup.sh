@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-echo "Installing Metallb"
-
 if ! kubectl get ns "{{ (datasource "config").metallb.namespace }}" &> /dev/null; then
     kubectl create ns "{{ (datasource "config").metallb.namespace }}"
 fi
@@ -15,5 +13,3 @@ fi
 if ! kubectl get secret -n "{{ (datasource "config").metallb.namespace }}" memberlist &> /dev/null; then
     kubectl create secret generic -n {{ (datasource "config").metallb.namespace }} memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 fi
-
-echo "Done."

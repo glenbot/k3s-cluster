@@ -22,7 +22,7 @@ do
 done
 
 services=("$@")
-available_services=("kubedb" "metallb" "traefik" "longhorn")
+available_services=("kubedb" "metallb" "traefik" "longhorn" "argocd")
 
 # Clean up previous run
 if [[ -d "${RUN_DIR}" ]]; then
@@ -36,6 +36,7 @@ fi
 
 for service in "${services[@]}"; do
   case "${available_services[@]}" in *"${service}"*)
+    echo "Installing ${service}"
     mkdir -p "${RUN_DIR}/${service}"
     for f in $(ls -d ${root_dir}/kube/${service}/*); do
         gomplate -d config="${root_dir}/kube-variables.yaml" --file "${f}" --out "${RUN_DIR}/${service}/$(basename ${f})" &>/dev/null
@@ -45,8 +46,9 @@ for service in "${services[@]}"; do
     if [[ "${DRY_RUN}" == "0" ]]; then
         ${RUN_DIR}/${service}/setup.sh
     fi
+    echo "Done."
     ;;
   esac
 done
 
-echo "Done."
+echo "Finished setting up base kube packages."

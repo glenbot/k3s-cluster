@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-echo "Installing Kubedb"
-
 if ! kubectl get ns "{{ (datasource "config").kubedb.namespace }}" &> /dev/null; then
     kubectl create ns "{{ (datasource "config").kubedb.namespace }}"
 fi
@@ -35,5 +33,3 @@ helm upgrade kubedb-catalog appscode/kubedb-catalog \
     --install \
     --version "{{ (datasource "config").kubedb.chart_version_catalog }}" \
     --namespace "{{ (datasource "config").kubedb.namespace }}"
-
-echo "Done."

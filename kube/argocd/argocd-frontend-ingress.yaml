@@ -1,0 +1,20 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-frontend-external
+  namespace: {{ (datasource "config").argocd.namespace }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ (datasource "config").argocd.frontend_subdomain }}.{{ (datasource "config").argocd.domain }}`)
+      kind: Rule
+      services:
+        - name: argocd-server
+          kind: Service
+          port: 80
+  tls:
+    certResolver: letsencrypt
+    domains:
+      - main: {{ (datasource "config").argocd.domain }}
+        sans: [ "*.{{ (datasource "config").argocd.domain }}"]
