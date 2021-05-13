@@ -5,7 +5,7 @@ DRY_RUN=0
 
 function usage {
     echo "${0} <services>"
-    echo "Available Services: kubedb, metallb, traefik, longhorn, argocd, chartmuseum"
+    echo "Available Services: kubedb, metallb, traefik, longhorn, argocd, chartmuseum, onepassword"
     echo "optional args: "
     echo "  -d Dry run. Will only render the templates to the .run folder"
     echo "Example: ${0}"
@@ -22,7 +22,7 @@ do
 done
 
 services=("$@")
-available_services=("kubedb" "metallb" "traefik" "longhorn" "argocd" "chartmuseum")
+available_services=("kubedb" "metallb" "traefik" "longhorn" "argocd" "chartmuseum" "onepassword")
 
 # Clean up previous run
 if [[ -d "${RUN_DIR}" ]]; then
