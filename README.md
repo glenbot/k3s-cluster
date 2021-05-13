@@ -111,6 +111,10 @@ chartmuseum:
     storageClass: longhorn # assuming you configured longhorn
   frontend_subdomain: chartmuseum
   domain: my.domain.com
+onepassword:
+  namespace: onepassword
+  chart_version: 1.2.0
+  credentials: /path/to/credentials/file
 ```
 
 # Provisioning
