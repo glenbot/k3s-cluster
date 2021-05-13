@@ -1,0 +1,4 @@
+persistence:
+  enabled: true
+  size: "{{ (datasource "config").chartmuseum.persistence.size }}"
+  storageClass: "{{ (datasource "config").chartmuseum.persistence.storageClass }}"

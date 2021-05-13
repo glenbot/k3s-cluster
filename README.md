@@ -103,6 +103,14 @@ argocd:
   version: stable
   frontend_subdomain: argocd
   domain: my.domain.com
+chartmuseum:
+  namespace: chartmuseum
+  chart_version: 3.1.0
+  persistence:
+    size: 10Gi
+    storageClass: longhorn # assuming you configured longhorn
+  frontend_subdomain: chartmuseum
+  domain: my.domain.com
 ```
 
 # Provisioning
