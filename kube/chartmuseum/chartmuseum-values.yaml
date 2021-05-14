@@ -2,3 +2,7 @@ persistence:
   enabled: true
   size: "{{ (datasource "config").chartmuseum.persistence.size }}"
   storageClass: "{{ (datasource "config").chartmuseum.persistence.storageClass }}"
+env:
+  open:
+    DISABLE_API: {{ (datasource "config").chartmuseum.env.open.DISABLE_API }}
+    ALLOW_OVERWRITE: {{ (datasource "config").chartmuseum.env.open.ALLOW_OVERWRITE }}

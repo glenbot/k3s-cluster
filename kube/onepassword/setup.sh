@@ -11,4 +11,7 @@ helm repo update
 helm upgrade --install connect 1password/connect \
     -n "{{ (datasource "config").onepassword.namespace }}" \
     --version "{{ (datasource "config").onepassword.chart_version }}" \
+    --set operator.create=true \
+    --set operator.token.value="{{ (datasource "config").onepassword.operator.token }}" \
+    --set operator.watchNamespace="{{ (datasource "config").onepassword.operator.watchNamespace }}" \
     --set-file "connect.credentials={{ (datasource "config").onepassword.credentials }}"

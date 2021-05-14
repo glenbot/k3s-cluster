@@ -109,12 +109,19 @@ chartmuseum:
   persistence:
     size: 10Gi
     storageClass: longhorn # assuming you configured longhorn
+  env:
+    open:
+      DISABLE_API: false
+      ALLOW_OVERWRITE: true
   frontend_subdomain: chartmuseum
   domain: my.domain.com
 onepassword:
   namespace: onepassword
   chart_version: 1.2.0
   credentials: /path/to/credentials/file
+  operator:
+    token: mytokenfrom1password
+    watchNamespace: "{onepassword,someothernamespace}"
 ```
 
 # Provisioning
